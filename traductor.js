@@ -1,31 +1,34 @@
 // traductor.js
-function sintetizador(tablaSimbolos) {
-    // 1. Mostrar la clasificación completa de cada palabra (Requerimiento del PDF)
-    console.log("\n--- CLASIFICACIÓN COMPLETA DE PALABRAS ---");
-    tablaSimbolos.forEach(simbolo => {
-        console.log(`- "${simbolo.lexema}" -> ${simbolo.token}`);
-    });
-
-    // 2. Generar la traducción correspondiente
+function sintetizador(tablaSimbolos, textoOriginal, reglaAplicada) {
     let traduccion = "";
 
-    // Si coincide con nuestra regla BNF: <Artículo> <Adjetivo> <Sustantivo> <Verbo> <Signo>
-    if (tablaSimbolos.length === 5) {
-        const articulo = tablaSimbolos[0].info.traduccion;
-        const adjetivo = tablaSimbolos[1].info.traduccion; // ej. negro
-        const sustantivo = tablaSimbolos[2].info.traduccion; // ej. perro
-        const verbo = tablaSimbolos[3].info.traduccion;
-        const signo = tablaSimbolos[4].info.traduccion;
-
-        // Ensamblamos la oración invirtiendo el Adjetivo y el Sustantivo para español
-        traduccion = `${articulo} ${sustantivo} ${adjetivo} ${verbo}${signo}`;
+    if (reglaAplicada === "palabra_sola") {
+        // Solo traducimos la palabra y le pegamos el punto
+        traduccion = tablaSimbolos[0].info.traduccion + tablaSimbolos[1].info.traduccion;
+    } else if (reglaAplicada === "regla1") {
+        // Invierte el Adjetivo y el Sustantivo (inglés a español)
+        const art = tablaSimbolos[0].info.traduccion;
+        const adj = tablaSimbolos[1].info.traduccion;
+        const sus = tablaSimbolos[2].info.traduccion;
+        const ver = tablaSimbolos[3].info.traduccion;
+        const sig = tablaSimbolos[4].info.traduccion;
+        traduccion = `${art} ${sus} ${adj} ${ver}${sig}`;
     } else {
-        // Fallback genérico: traducción palabra por palabra si agregas otras reglas después
+        // Para regla2, regla3 y regla_compuesta, la traducción es lineal palabra por palabra
         traduccion = tablaSimbolos.map(simbolo => simbolo.info.traduccion).join(" ").replace(/ \./g, ".");
     }
 
-    // Capitalizamos la primera letra para que se vea como una oración real
-    traduccion = traduccion.charAt(0).toUpperCase() + traduccion.slice(1);
+    // --- MANEJO DE MAYÚSCULAS Y MINÚSCULAS ---
+    const originalLimpio = textoOriginal.trim();
+    const tieneLetras = /[a-zA-Z]/.test(originalLimpio);
+
+    if (tieneLetras && originalLimpio === originalLimpio.toUpperCase()) {
+        traduccion = traduccion.toUpperCase();
+    } else if (tieneLetras && originalLimpio === originalLimpio.toLowerCase()) {
+        traduccion = traduccion.toLowerCase();
+    } else {
+        traduccion = traduccion.charAt(0).toUpperCase() + traduccion.slice(1);
+    }
 
     return traduccion;
 }

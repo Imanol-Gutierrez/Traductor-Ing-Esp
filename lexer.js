@@ -2,7 +2,18 @@
 const diccionario = require('./diccionario');
 
 function analizadorLexico(textoEntrada) {
-    const textoLimpio = textoEntrada.toLowerCase().replace(/\./g, ' .');
+    // 1. Limpiamos y normalizamos el texto
+    let textoLimpio = textoEntrada.toLowerCase().trim();
+    
+    // 2. MAGIA DE UX: Autocompletar el punto si el usuario lo olvida
+    if (!textoLimpio.endsWith('.')) {
+        textoLimpio += " .";
+    } else {
+        // Si ya tiene punto, aseguramos que haya un espacio antes para separarlo
+        textoLimpio = textoLimpio.replace(/\./g, ' .'); 
+    }
+
+    // 3. Separar por espacios
     const palabras = textoLimpio.split(/\s+/); 
     
     const tablaSimbolos = [];
@@ -18,7 +29,6 @@ function analizadorLexico(textoEntrada) {
                 info: diccionario[palabra]
             });
         } else {
-            // Generar tabla de errores indicando tipo, ubicación y descripción [cite: 55, 56, 57, 58]
             tablaErrores.push({
                 tipo: "Léxico",
                 ubicacion: `Posición ${index + 1} ('${palabra}')`,

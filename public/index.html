@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor Ingles-Español</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Traductor Ingles-Español</h1>
+        <p>Proyecto de Compiladores</p>
+    </header>
+
+    <main>
+        <div class="controles">
+            <button id="btn-dictar" class="btn-extra">🎤 Dictar (Voz)</button>
+            <input type="file" id="archivo-txt" accept=".txt">
+            <button id="btn-traducir" class="btn-principal">Traducir / Analizar</button>
+        </div>
+
+        <div class="paneles">
+            <div class="panel">
+                <h3>Inglés (Entrada)</h3>
+                <textarea id="texto-entrada" placeholder="Escribe tu oración aquí, sube un .txt o usa el micrófono..."></textarea>
+            </div>
+            <div class="panel">
+                <h3>Español (Salida)</h3>
+                <div id="texto-salida" class="caja-salida">Esperando traducción...</div>
+            </div>
+        </div>
+
+        <section class="analisis-compilador">
+            <h2>Inspección del Compilador</h2>
+            
+            <div class="resultados-grid">
+                <div class="caja-analisis">
+                    <h3>Tabla de Errores</h3>
+                    <div id="tabla-errores" class="contenido-analisis error-texto">Sin errores.</div>
+                </div>
+                
+                <div class="caja-analisis">
+                    <h3>Tabla de Símbolos (Tokens)</h3>
+                    <div id="tabla-simbolos" class="contenido-analisis">Esperando análisis...</div>
+                </div>
+
+                <div class="caja-analisis arbol-caja">
+                    <h3>Árbol de Derivación (Sintáctico)</h3>
+                    <pre id="arbol-derivacion" class="contenido-analisis">Esperando análisis...</pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
