@@ -13,23 +13,27 @@
     </header>
 
     <main>
+        <!-- Controles Superiores -->
         <div class="controles">
             <button id="btn-dictar" class="btn-extra">🎤 Dictar (Voz)</button>
             <input type="file" id="archivo-txt" accept=".txt">
+            <button id="btn-intercambiar" class="btn-secundario">🔄 Cambiar Idioma</button>
             <button id="btn-traducir" class="btn-principal">Traducir / Analizar</button>
         </div>
 
+        <!-- Paneles de Traducción -->
         <div class="paneles">
             <div class="panel">
-                <h3>Inglés (Entrada)</h3>
-                <textarea id="texto-entrada" placeholder="Escribe tu oración aquí, sube un .txt o usa el micrófono..."></textarea>
+                <h3 id="titulo-entrada">Inglés (Entrada)</h3>
+                <textarea id="texto-entrada" placeholder="Escribe tu oración aquí, sube un archivo .txt o usa el micrófono..."></textarea>
             </div>
             <div class="panel">
-                <h3>Español (Salida)</h3>
+                <h3 id="titulo-salida">Español (Salida)</h3>
                 <div id="texto-salida" class="caja-salida">Esperando traducción...</div>
             </div>
         </div>
 
+        <!-- Resultados del Compilador -->
         <section class="analisis-compilador">
             <h2>Inspección del Compilador</h2>
             

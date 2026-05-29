@@ -1,12 +1,18 @@
 const btnTraducir = document.getElementById('btn-traducir');
 const btnDictar = document.getElementById('btn-dictar');
+const btnIntercambiar = document.getElementById('btn-intercambiar'); // Nuevo botón
 const inputArchivo = document.getElementById('archivo-txt');
 const textoEntrada = document.getElementById('texto-entrada');
 const textoSalida = document.getElementById('texto-salida');
 
+const tituloEntrada = document.getElementById('titulo-entrada');
+const tituloSalida = document.getElementById('titulo-salida');
+
 const tablaErrores = document.getElementById('tabla-errores');
 const tablaSimbolos = document.getElementById('tabla-simbolos');
 const arbolDerivacion = document.getElementById('arbol-derivacion');
+
+let esInglesAEspanol = true; // Estado inicial
 
 // 1. Enviar texto al servidor (Backend)
 btnTraducir.addEventListener('click', async () => {
@@ -30,11 +36,10 @@ btnTraducir.addEventListener('click', async () => {
     }
 });
 
-// 2. Mostrar los resultados del compilador en pantalla
+// 2. Mostrar los resultados en pantalla
 function renderizarResultados(data) {
-    // Renderizar Errores
     if (data.errores && data.errores.length > 0) {
-        textoSalida.innerHTML = "<span style='color:red;'>Traducción abortada debido a errores. Revisa la tabla de errores.</span>";
+        textoSalida.innerHTML = "<span style='color:red;'>Traducción abortada. Revisa la tabla de errores.</span>";
         tablaErrores.innerHTML = data.errores.map(err => 
             `<strong>[Error ${err.tipo}]</strong> ${err.ubicacion}: ${err.descripcion}<br>`
         ).join("");
@@ -43,14 +48,12 @@ function renderizarResultados(data) {
         tablaErrores.innerHTML = "<span style='color:green;'>✅ Texto libre de errores. Análisis Semántico y Sintáctico correctos.</span>";
     }
 
-    // Renderizar Tabla de Símbolos
     if (data.tablaSimbolos.length > 0) {
         tablaSimbolos.innerHTML = data.tablaSimbolos.map(simbolo => 
             `> "${simbolo.lexema}" -> <strong>${simbolo.token}</strong><br>`
         ).join("");
     }
 
-    // Renderizar Árbol de Derivación (JSON bonito)
     if (data.arbolDerivacion) {
         arbolDerivacion.innerText = JSON.stringify(data.arbolDerivacion, null, 2);
     } else {
@@ -70,11 +73,13 @@ inputArchivo.addEventListener('change', (evento) => {
     }
 });
 
-// 4. Reconocimiento de Voz (Puntos Extra)
+// 4. Reconocimiento de Voz
+let reconocimiento;
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
 if (SpeechRecognition) {
-    const reconocimiento = new SpeechRecognition();
-    reconocimiento.lang = 'en-US'; // Escucha en inglés
+    reconocimiento = new SpeechRecognition();
+    reconocimiento.lang = 'en-US'; // Idioma por defecto
     reconocimiento.interimResults = false;
 
     btnDictar.addEventListener('click', () => {
@@ -84,7 +89,7 @@ if (SpeechRecognition) {
 
     reconocimiento.addEventListener('result', (evento) => {
         const transcripcion = evento.results[0][0].transcript;
-        textoEntrada.value = transcripcion + " ."; // Añade punto al final para nuestro lexer
+        textoEntrada.value = transcripcion + " ."; 
     });
 
     reconocimiento.addEventListener('error', () => {
@@ -92,5 +97,27 @@ if (SpeechRecognition) {
     });
 } else {
     btnDictar.style.display = 'none';
-    console.warn("El navegador no soporta la Web Speech API.");
 }
+
+// 5. Intercambiar Idiomas (¡NUEVA FUNCIÓN!)
+btnIntercambiar.addEventListener('click', () => {
+    esInglesAEspanol = !esInglesAEspanol;
+    
+    // Cambiamos los títulos visuales
+    if (esInglesAEspanol) {
+        tituloEntrada.innerText = "Inglés (Entrada)";
+        tituloSalida.innerText = "Español (Salida)";
+        if (reconocimiento) reconocimiento.lang = 'en-US'; // Voz en inglés
+    } else {
+        tituloEntrada.innerText = "Español (Entrada)";
+        tituloSalida.innerText = "Inglés (Salida)";
+        if (reconocimiento) reconocimiento.lang = 'es-ES'; // Voz en español
+    }
+
+    // Limpiamos la pantalla para no confundir al usuario
+    textoEntrada.value = "";
+    textoSalida.innerText = "Esperando traducción...";
+    tablaErrores.innerHTML = "Sin errores.";
+    tablaSimbolos.innerHTML = "Esperando análisis...";
+    arbolDerivacion.innerText = "Esperando análisis...";
+});

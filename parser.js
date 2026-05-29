@@ -9,26 +9,21 @@ function analizadorSintactico(tablaSimbolos) {
     let esSintaxisValida = false;
     let reglaAplicada = null;
 
-    // Regla especial para UNA sola palabra (Palabra + Punto)
     if (estructuraActual.length === 2 && estructuraActual[1] === "signo_puntuacion") {
         esSintaxisValida = true;
         reglaAplicada = "palabra_sola";
     } else {
-        // Reglas BNF normales
         const reglasBNF = {
-            // Reglas cortas de 5 tokens
+            // Reglas en Inglés
             regla1: ["articulo_definido", "adjetivo_calificativo", "sustantivo", "verbo", "signo_puntuacion"],
             regla2: ["pronombre_personal", "verbo", "articulo_indefinido", "sustantivo", "signo_puntuacion"],
             regla3: ["articulo_definido", "sustantivo", "verbo", "adverbio_tiempo", "signo_puntuacion"],
             
-            // ¡NUEVA! Regla compuesta de 10 tokens (Oración 1 + Conjunción + Oración 2)
-            // Ej: "He eats an apple and she reads a book ."
-            regla_compuesta: [
-                "pronombre_personal", "verbo", "articulo_indefinido", "sustantivo", // 4 tokens
-                "conjuncion_coordinante",                                           // 1 token (and)
-                "pronombre_personal", "verbo", "articulo_indefinido", "sustantivo", // 4 tokens
-                "signo_puntuacion"                                                  // 1 token (.)
-            ]
+            // Reglas en ESPAÑOL (¡NUEVO!)
+            // Ej: "el perro negro corre ."
+            regla_es_1: ["articulo_definido", "sustantivo", "adjetivo_calificativo", "verbo", "signo_puntuacion"],
+            // Ej: "la niña corre mañana ."
+            regla_es_2: ["articulo_definido", "sustantivo", "verbo", "adverbio_tiempo", "signo_puntuacion"]
         };
 
         for (const [nombreRegla, estructuraBnf] of Object.entries(reglasBNF)) {
@@ -43,8 +38,8 @@ function analizadorSintactico(tablaSimbolos) {
     if (!esSintaxisValida) {
         tablaErrores.push({
             tipo: "Sintáctico",
-            ubicacion: `Estructura general (${estructuraActual.length} tokens detectados)`,
-            descripcion: "El orden de las palabras no coincide con ninguna regla BNF (simple o compuesta) del sistema."
+            ubicacion: `Estructura general (${estructuraActual.length} tokens)`,
+            descripcion: "El orden no coincide con reglas gramaticales en inglés ni en español."
         });
     } else {
         arbolDerivacion = {
